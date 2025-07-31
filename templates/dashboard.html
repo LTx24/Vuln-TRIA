@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vuln-TRIA AI Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet" />
+    <!-- Optional external CSS if you have one -->
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <style>
+        /* Core page styles (or you can put these into style.css) */
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(120deg, #20252f 10%, #465563 100%);
+            color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+        .vuln-brand {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 2px 4px 12px #111a;
+        }
+        .big-input {
+            font-size: 1.15em;
+            border-radius: 9px;
+            padding: 1em 1.1em;
+            background: #2d3a4e;
+            border: 1.5px solid #2bbfd7;
+            color: #e6fafd;
+            margin-bottom: 14px;
+            transition: border-color 0.3s ease;
+        }
+        .big-input:focus {
+            border-color: #16e3dd;
+            background: #263f55;
+            color: #bbf0fc;
+        }
+        .scan-btn {
+            background: linear-gradient(90deg, #13b0b9 55%, #2897c7 100%);
+            color: #fff;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 1.11em;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+        .scan-btn:hover {
+            background: linear-gradient(90deg, #11dfed 60%, #006084 100%);
+        }
+        .banner-bar {
+            border-radius: 1.8em;
+            padding: 2em 2em 1.4em 2em;
+            margin-bottom: 2.2em;
+        }
+        /* Severity result banners */
+        .res-critical {
+            background: linear-gradient(90deg, #1a2639 60%, #da3a52 120%);
+            color: #fff;
+        }
+        .res-high {
+            background: linear-gradient(90deg, #224d6d 60%, #297fb8 120%);
+            color: #f5fcfe;
+        }
+        .res-medium {
+            background: linear-gradient(90deg, #345a68 80%, #209d9c 120%);
+            color: #e0f7fa;
+        }
+        .res-low,
+        .res-default {
+            background: linear-gradient(90deg, #27b395 60%, #60b4eb 120%);
+            color: #e6fffa;
+        }
+        .remediation-block {
+            border-left: 5px solid #1ec6d5;
+            border-radius: 1.2em;
+            background: rgba(30, 198, 213, 0.15);
+            color: #daf1ff;
+            font-size: 1.15em;
+            margin: 1.2em 0 1.4em 0;
+            padding: 1.15em 1.5em;
+        }
+        .remediation-title {
+            color: #16e3dd;
+            font-size: 1.18em;
+            font-weight: 900;
+            letter-spacing: 0.07em;
+            margin-bottom: 0.6em;
+            text-shadow: 0 2px 12px rgba(34, 255, 250, 0.21);
+        }
+        table {
+            width: 100%;
+            border-spacing: 0;
+            background: rgba(19, 143, 167, 0.13);
+            color: #e0fdff;
+            font-size: 1.1em;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        th,
+        td {
+            border-bottom: 1px solid #244262;
+            background: none;
+            padding: 14px 9px;
+        }
+        th {
+            background: #112c37;
+            color: #45f5ec;
+            font-weight: 700;
+            font-size: 1.06em;
+        }
+        tr:nth-child(even) {
+            background-color: rgba(35, 66, 100, 0.37);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .alert {
+            background: #253d4d;
+            color: #9ce3ef;
+            border-radius: 1em;
+            font-size: 1.11em;
+            border: none;
+            padding: 1.1em 1.3em;
+            margin: 0.9em 0 1.3em 0;
+        }
+        label {
+            color: #9ce3ef;
+            font-size: 1.11em;
+            font-weight: 700;
+        }
+        .scan-type-select,
+        .scan-type-select option {
+            background-color: #20252b !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+        .badge {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<nav
+    class="navbar navbar-dark"
+    style="background: rgba(18,19,39,0.96); box-shadow: 0 4px 16px #111a;"
+>
+    <div class="container-fluid">
+        <span class="navbar-brand vuln-brand">
+            Vuln<span style="color:#0abfbc;">-TRIA</span> AI Dashboard
+        </span>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Dashboard Header -->
+    <div class="text-center mb-3">
+        <div class="display-4 mb-1 fw-bold" style="letter-spacing: 1.2px; font-size: 2.2rem;">
+            Vulnerability Triage & Remediation
+        </div>
+        <p class="fs-5">Scan ethically. See clear, actionable results powered by AI.</p>
+    </div>
+
+    <!-- Scan Input Form -->
+    <form class="row justify-content-center mb-4 gy-2" method="post" action="/">
+        <div class="col-md-6">
+            <label for="target">Target URL/IP</label>
+            <input
+                type="text"
+                id="target"
+                name="target"
+                class="form-control big-input"
+                required
+                placeholder="e.g., https://example.com or 192.0.2.1"
+            />
+        </div>
+        <div class="col-md-4">
+            <label for="scan_type">Scan Type</label>
+            <select id="scan_type" name="scan_type" class="form-select big-input scan-type-select">
+                <option value="basic">Basic (Quick Port Scan)</option>
+                <option value="advanced">Advanced (AI, OS & Service Detection)</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end justify-content-end">
+            <button type="submit" class="btn scan-btn btn-lg px-4 py-3">Start Scan</button>
+        </div>
+    </form>
+
+    <!-- Vulnerability Scan Results -->
+    {% if results %}
+    {% set sev = results.triage_status or "Low" %}
+    {% set barclass = (
+        "res-critical" if sev == "Critical" else
+        "res-high" if sev == "High" else
+        "res-medium" if sev == "Medium" else
+        "res-low" if sev == "Low" else
+        "res-default"
+    ) %}
+    <div class="banner-bar {{ barclass }}">
+        <div class="mb-2 fs-3 fw-bold">
+            Scan Results for <span>{{ results.message }}</span>
+        </div>
+        <span
+            class="badge px-4 py-2 fs-4 {{ barclass }}"
+            style="border-radius: 1.3em;"
+            >{{ results.triage_status }}</span
+        >
+
+        {% if results.details %}
+        <table class="table table-borderless text-white align-middle mb-3 mt-4" style="font-size: 1.2em;">
+            <thead>
+                <tr>
+                    <th>Port</th>
+                    <th>Service</th>
+                    <th>Potential Vulnerability</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detail in results.details %}
+                <tr>
+                    <td><span class="fw-bold">{{ detail.port }}</span></td>
+                    <td>{{ detail.service | capitalize }}</td>
+                    <td>{{ detail.potential_vuln }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="fs-5 my-3">No open ports or risks found. 🎉 All clear!</p>
+        {% endif %}
+
+        <!-- Practical Remediation Section -->
+        <div class="remediation-block mb-1 mt-2">
+            <div class="remediation-title">Practical Remediation Steps</div>
+            <ul>
+                {% if results.triage_status == "Critical" %}
+                <li>Restrict access to listed ports with a firewall immediately.</li>
+                <li>Patch and update all vulnerable services as soon as possible.</li>
+                <li>Change all passwords and enable MFA (Multi-Factor Authentication).</li>
+                <li>Audit logs for any suspicious activity starting now.</li>
+                {% elif results.triage_status == "High" %}
+                <li>Apply patches and restrict unnecessary service access promptly.</li>
+                <li>Review and update credentials to reduce risk.</li>
+                {% elif results.triage_status == "Medium" %}
+                <li>Disable or restrict any unneeded services.</li>
+                <li>Apply the latest updates and review configurations.</li>
+                {% elif results.triage_status == "Low" %}
+                <li>Keep your system up to date and monitor regularly.</li>
+                {% else %}
+                <li>Your system is currently secure; continue proactive scanning.</li>
+                {% endif %}
+            </ul>
+        </div>
+        <form method="post" action="/clear_results" class="pt-3">
+            <button type="submit" class="btn btn-light btn-lg">Clear Results</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-light text-dark" style="border-radius: 1.2em;">
+        No current scan results. Run a scan to see details.
+    </div>
+    {% endif %}
+
+    <!-- Scan History Log -->
+    <h3
+        class="fw-bold mb-3 mt-5"
+        style="font-size: 2rem; color: #18dee5; letter-spacing: 0.5px; text-shadow: 0px 2px 12px #2227;"
+    >
+        <i class="bi bi-clock-history"></i> Scan History Log
+    </h3>
+    {% if data.vulnerabilities %}
+    <div class="table-responsive">
+        <table
+            class="table align-middle"
+            style="background: rgba(19, 143, 167, 0.13); color: #e0fdff; border-radius: 15px;"
+        >
+            <thead style="font-size: 1.09em; background: #112c37;">
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>Target</th>
+                    <th>Severity</th>
+                    <th>Remediation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vuln in data.vulnerabilities %}
+                <tr>
+                    <td><span style="font-weight: 550;">{{ vuln.id[:7] }}...</span></td>
+                    <td>
+                        {% set dt = vuln.timestamp[:16].replace('T', ' ') %}
+                        {% set date = dt.split(' ')[0].split('-') %}
+                        {% set time = dt.split(' ')[1].split(':') %}
+                        {{ date[2] }}/{{ date[1] }}/{{ date[0] }} {{ time[0] }}:{{ time[1] }}
+                    </td>
+                    <td>{{ vuln.target }}</td>
+                    {% set sev_style = (
+                        'background:#da3a52;color:#fff;' if vuln.severity == 'Critical' else
+                        'background:#2193b0;color:#fff;' if vuln.severity == 'High' else
+                        'background:#16e3dd;color:#277;' if vuln.severity == 'Medium' else
+                        'background:#27b395;color:#173;font-weight:700;' if vuln.severity == 'Low' else
+                        'background:#2a2f38;color:#ffe;'
+                    ) %}
+                    <td>
+                        <span class="badge fs-5 px-3" style="{{ sev_style }}">
+                            {{ vuln.severity }}
+                        </span>
+                    </td>
+                    <td style="max-width: 260px;">{{ vuln.remediation }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted">No scan history available yet. Run scans to build the log.</p>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Activate all Bootstrap tooltips (if any)
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>
+</body>
+</html>
