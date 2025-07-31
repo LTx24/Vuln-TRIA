@@ -40,10 +40,13 @@ Vuln-TRIA is a modern web application that enables **AI-powered security scannin
 
 ### Dashboard Home
 <img width="1893" height="641" alt="brave_screenshot" src="https://github.com/user-attachments/assets/f358228e-00b7-4d8a-a015-fad0c7839fbb" />
+
 ### Scan History Log
 <img width="1686" height="713" alt="brave_screenshot (2)" src="https://github.com/user-attachments/assets/b96b02a8-7b82-4854-aabc-39cb5db8304c" />
+
 ### High-Risk Finding
 <img width="1912" height="965" alt="brave_screenshot (4)" src="https://github.com/user-attachments/assets/a6236353-d6c6-4738-ae64-416ef49515bd" />
+
 ### Low-Risk Finding
 <img width="1915" height="951" alt="brave_screenshot (1)" src="https://github.com/user-attachments/assets/6bde9221-12c7-46a0-a752-6af7d554af0f" />
 
